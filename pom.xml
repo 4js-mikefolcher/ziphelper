@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!--
+    groupId uses the GitHub-based namespace io.github.<user>, which the Sonatype
+    Central Portal verifies via a GitHub repo (no domain ownership needed). The
+    Java package stays com.fourjs.zip — Maven groupId and Java package are
+    independent.
+  -->
+  <groupId>io.github.4js-mikefolcher</groupId>
+  <artifactId>ziphelper</artifactId>
+  <version>2.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>ziphelper</name>
+  <description>BDL-friendly Java helper for creating and extracting zip archives, backed by Zip4j. Drives the Genero zipapi library.</description>
+  <url>https://github.com/4js-mikefolcher/ziphelper</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>mfolcher</id>
+      <name>Michael Folcher</name>
+      <email>michael.folcher@4js.com</email>
+      <organization>Four Js</organization>
+      <organizationUrl>https://www.4js.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/4js-mikefolcher/ziphelper.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/4js-mikefolcher/ziphelper.git</developerConnection>
+    <url>https://github.com/4js-mikefolcher/ziphelper</url>
+  </scm>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Target Java 8 bytecode for broad runtime compatibility; loads fine on the JDK 13 Genero uses. -->
+    <maven.compiler.release>8</maven.compiler.release>
+    <zip4j.version>2.11.5</zip4j.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>net.lingala.zip4j</groupId>
+      <artifactId>zip4j</artifactId>
+      <version>${zip4j.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <!--
+      Activate with `mvn -Prelease deploy` to publish to Maven Central via the
+      Sonatype Central Publisher Portal. Requires:
+        * a verified `io.github.4js-mikefolcher` namespace on central.sonatype.com
+          (verified by creating the GitHub repo the portal names)
+        * a GPG signing key available to maven-gpg-plugin
+        * a <server id="central"> entry in ~/.m2/settings.xml with a portal user token
+      A plain `mvn package` does NOT need any of this.
+    -->
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals><goal>jar-no-fork</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.7.0</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals><goal>jar</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals><goal>sign</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.5.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
